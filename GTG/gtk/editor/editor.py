@@ -229,6 +229,9 @@ class TaskEditor(object):
         dismiss_editor.add_accelerator('clicked', agr, key, mod,
                                        Gtk.AccelFlags.VISIBLE)
 
+        key, modifier = Gtk.accelerator_parse("<Control>s")
+        agr.connect(key, modifier, Gtk.AccelFlags.VISIBLE, self.debug)
+
     # Can be called at any time to reflect the status of the Task
     # Refresh should never interfere with the TaskView.
     # If a title is passed as a parameter, it will become
@@ -617,5 +620,9 @@ class TaskEditor(object):
 
     def get_window(self):
         return self.window
+
+    def debug(self, *args):
+        self.textview.debug()
+
 
 # -----------------------------------------------------------------------------

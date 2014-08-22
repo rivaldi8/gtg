@@ -518,6 +518,7 @@ class TaskView(Gtk.TextView):
           1. Applying the title style on the first line
           2. Changing the name of the window if title change
         """
+        print("At modified()")
         if not buff:
             buff = self.buff
         cursor_mark = buff.get_insert()
@@ -777,6 +778,7 @@ class TaskView(Gtk.TextView):
     # When the user removes a selection, we remove subtasks and @tags
     # from this selection
     def _delete_range(self, buff, start, end):
+        print("At _delete_range()")
 #        #If we are at the beginning of a mark, put this mark at the end
 #        marks = start.get_marks()
 #        for m in marks:
@@ -1129,6 +1131,7 @@ class TaskView(Gtk.TextView):
 
     # Function called each time the user inputs a letter
     def _insert_at_cursor(self, tv, itera, tex, leng):
+        print("At _insert_at_cursor()")
         # We don't paste the bullet
         if tex.strip() != self.bullet1:
             # print "text ###%s### inserted length = %s" %(tex, leng)
@@ -1335,6 +1338,7 @@ class TaskView(Gtk.TextView):
         self.buff.disconnect(self.insert_sigid)
         insert_mark = self.buff.get_insert()
         insert_iter = self.buff.get_iter_at_mark(insert_mark)
+        print("At backspace() Pos: ({0},{1})".format(insert_iter.get_line(), insert_iter.get_line_offset()))
         # All this crap to find if we are at the end of an indent tag
         if insert_iter.ends_tag():
             for t in insert_iter.get_toggled_tags(False):
@@ -1446,6 +1450,78 @@ class TaskView(Gtk.TextView):
         clipboard = Gtk.Clipboard.get(Gdk.SELECTION_CLIPBOARD)
         clipboard.set_text(anchor, -1)
         clipboard.store()
+
+    def debug(self):
+        insert_iter = self.get_insert()
+        print("Pos: ({0},{1})".format(insert_iter.get_line(), insert_iter.get_line_offset()))
+
+        text_tags = insert_iter.get_tags()
+
+        for text_tag in text_tags:
+            text_tag_dump = "Tag: "
+
+            if hasattr(text_tag, 'name'):
+                text_tag_dump += "name: {0} ".format(text_tag.name)
+
+            if hasattr(text_tag, 'is_subtask'):
+                text_tag_dump += "is_subtask: {0}, child: {1} ".format(
+                                                                text_tag.is_subtask,
+                                                                text_tag.child)
+
+            if hasattr(text_tag, 'is_tag'):
+                text_tag_dump += "is_tag: {0}, tagname: {1} ".format(
+                                                                text_tag.is_tag,
+                                                                text_tag.tagname)
+
+            if hasattr(text_tag, 'is_indent'):
+                text_tag_dump += "is_indent: {0}, indent_level: {1} ".format(
+                                                                text_tag.is_indent,
+                                                                text_tag.indent_level)
+
+            if hasattr(text_tag, 'is_anchor'):
+                text_tag_dump += "is_anchor: {0}, link: {1} ".format(
+                                                                text_tag.is_anchor,
+                                                                text_tag.link)
+
+            print(text_tag_dump)
+
+
+        text_tags = insert_iter.get_toggled_tags(False)
+
+        for text_tag in text_tags:
+            text_tag_dump = "Untoggled Tag: "
+
+            if hasattr(text_tag, 'name'):
+                text_tag_dump += "name: {0} ".format(text_tag.name)
+
+            if hasattr(text_tag, 'is_subtask'):
+                text_tag_dump += "is_subtask: {0}, child: {1} ".format(
+                                                                text_tag.is_subtask,
+                                                                text_tag.child)
+
+            if hasattr(text_tag, 'is_tag'):
+                text_tag_dump += "is_tag: {0}, tagname: {1} ".format(
+                                                                text_tag.is_tag,
+                                                                text_tag.tagname)
+
+            if hasattr(text_tag, 'is_indent'):
+                text_tag_dump += "is_indent: {0}, indent_level: {1} ".format(
+                                                                text_tag.is_indent,
+                                                                text_tag.indent_level)
+
+            if hasattr(text_tag, 'is_anchor'):
+                text_tag_dump += "is_anchor: {0}, link: {1} ".format(
+                                                                text_tag.is_anchor,
+                                                                text_tag.link)
+
+            print(text_tag_dump)
+        text_marks = insert_iter.get_marks()
+
+        for text_mark in text_marks:
+            if text_mark.get_name() != "insert" and text_mark.get_name() != "selection_bound":
+                print("Mark: name: {0} gravity: {1}".format(
+                                                        text_mark.get_name(),
+                                                        text_mark.get_left_gravity()))
 
 
 GObject.type_register(TaskView)
